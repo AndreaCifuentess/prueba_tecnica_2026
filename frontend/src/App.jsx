@@ -5,6 +5,8 @@ import { Navbar } from './components/navBar';
 import { LoginPage } from './pages/login';
 import { BoardPage } from './pages/board';
 import { UsersPage } from './pages/users';
+import { DashboardPage } from './pages/dashboard';  
+
 
 function Shell({ children }) {
   return (
@@ -40,6 +42,12 @@ export default function App() {
           <Route path="/usuarios" element={
             <ProtectedRoute>
               <Shell><UsersPage /></Shell>
+            </ProtectedRoute>
+          } />
+
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+              <Shell><DashboardPage /></Shell>
             </ProtectedRoute>
           } />
 

@@ -85,10 +85,12 @@ export function UsersPage() {
         </div>
         <button
           onClick={openCreate}
-          className="bg-brand hover:bg-brand-dark text-white font-medium text-sm px-4 py-2.5 rounded-lg shadow-sm transition-all flex items-center gap-2"
+          className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-md hover:shadow-lg transition duration-150 flex items-center gap-2 cursor-pointer"
         >
-          <span>+</span> Nuevo usuario
+          <span className="text-base font-bold line-height-none">+</span>Nuevo usuario
         </button>
+
+         
       </div>
 
       {error && (
@@ -252,8 +254,8 @@ export function UsersPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="bg-brand hover:bg-brand-dark text-white text-sm font-medium px-4 py-2 rounded-lg shadow-sm transition-colors disabled:opacity-50"
-                >
+                 className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm px-4 py-2.5 rounded-lg shadow-md hover:shadow-lg transition duration-150 flex items-center gap-2 cursor-pointer"
+                  >
                   {saving ? 'Guardando…' : 'Guardar'}
                 </button>
               </div>
