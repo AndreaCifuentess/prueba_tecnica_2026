@@ -40,7 +40,7 @@ export function BoardPage() {
 
   async function handleSaveNote(id, payload) {
     try {
-      const res = await api.put(`/notes/${id}`, payload);
+      const res = await api.patch(`/notes/${id}`, payload);
       setNotes((prev) => prev.map((n) => (n.id === id ? res.data : n)));
     } catch (err) {
       setError(err.response?.data?.error || 'No se pudo guardar la nota');
@@ -60,7 +60,7 @@ export function BoardPage() {
     // Actualización optimista: se refleja en interfaz al instante
     setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, posX, posY } : n)));
     try {
-      await api.patch(`/notes/${id}/position`, { posX, posY });
+      await api.patch(`/notes/${id}/`, { posX, posY });
     } catch (err) {
       setError('No se pudo guardar la posición: ' + (err.response?.data?.error || err.message));
     }

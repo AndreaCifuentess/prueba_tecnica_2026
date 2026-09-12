@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/navBar';
 import { LoginPage } from './pages/login';
 import { BoardPage } from './pages/board';
+import { UsersPage } from './pages/users';
 
 function Shell({ children }) {
   return (
@@ -35,6 +36,12 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="/usuarios" element={
+            <ProtectedRoute>
+              <Shell><UsersPage /></Shell>
+            </ProtectedRoute>
+          } />
 
           <Route path="/" element={<RootRedirect />} />
         </Routes>
