@@ -1,6 +1,6 @@
 const express = require('express');
 const prisma = require('../config/prisma');
-const { authenticate } = require('../auth');
+const { authenticate } = require('../auth/auth');
 
 const router = express.Router();
 

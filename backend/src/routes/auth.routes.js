@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../config/prisma');
-const { JWT_SECRET } = require('../auth');
+const { JWT_SECRET } = require('../auth/auth');
 
 const router = express.Router();
 
@@ -40,6 +40,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('ERROR EN LOGIN:',error)
     return res.status(500).json({ error: 'Error en el servidor durante la autenticación' });
   }
 });
