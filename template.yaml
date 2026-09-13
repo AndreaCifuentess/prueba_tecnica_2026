@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Función Lambda que calcula las métricas del dashboard (total de notas
+  y su distribución por estado) para el portal de equipo.
+
+Parameters:
+  DatabaseUrl:
+    Type: String
+    Description: Cadena de conexión a la base de datos Postgres
+    NoEcho: true
+
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 128
+    Runtime: nodejs18.x
+
+Resources:
+  DashboardMetricsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: lambda/dashboard-metrics/
+      Environment:
+        Variables:
+          DATABASE_URL: !Ref DatabaseUrl
+      Events:
+        MetricsApi:
+          Type: Api
+          Properties:
+            Path: /metrics
+            Method: get
+
+Outputs:
+  DashboardMetricsApiUrl:
+    Description: URL del endpoint de métricas (API Gateway)
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/metrics"
+  DashboardMetricsFunctionArn:
+    Description: ARN de la función Lambda
+    Value: !GetAtt DashboardMetricsFunction.Arn
