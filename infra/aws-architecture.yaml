@@ -1,0 +1,163 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Arquitectura de despliegue del portal de equipo: EC2 para la API (dentro
+  de un contenedor Docker), y S3 + CloudFront para el frontend estático.
+  Esta plantilla NO despliega la función Lambda del dashboard (esa vive en
+  template.yaml, gestionada con AWS SAM por separado).
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC donde se creará la instancia EC2 (puede ser la VPC por defecto)
+
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Subred pública dentro de esa VPC
+
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Par de llaves SSH para poder conectarte a la instancia EC2
+
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+    Description: Cadena de conexión a la base de datos Postgres que usará la API
+
+  JwtSecret:
+    Type: String
+    NoEcho: true
+    Description: Secreto usado para firmar los tokens JWT
+
+Resources:
+
+  # ---------- EC2: corre la API dentro de un contenedor Docker ----------
+
+  ApiSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Permite HTTP a la API y SSH para administración
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 4000
+          ToPort: 4000
+          CidrIp: 0.0.0.0/0
+
+  ApiInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref ApiSecurityGroup
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64}}'
+      Tags:
+        - Key: Name
+          Value: team-portal-api
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Instala Docker y arranca el contenedor de la API.
+          yum update -y
+          yum install -y docker
+          systemctl start docker
+          systemctl enable docker
+
+          # Nota: en un despliegue real, la imagen se publicaría en un
+          # registro (ej. Amazon ECR) y se descargaría aquí con `docker pull`.
+          # Por simplicidad, este script asume que el código ya fue subido
+          # manualmente a la instancia (ver README para el paso manual).
+          docker run -d \
+            --name team-portal-api \
+            -p 4000:4000 \
+            -e DATABASE_URL="${DatabaseUrl}" \
+            -e JWT_SECRET="${JwtSecret}" \
+            -e PORT=4000 \
+            team-portal-backend:latest
+
+  # ---------- S3: almacena los archivos estáticos del frontend ----------
+
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'team-portal-frontend-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # Política que permite a CloudFront (y solo a CloudFront) leer el bucket.
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: 's3:GetObject'
+            Resource: !Sub '${FrontendBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+  # ---------- CloudFront: distribuye el frontend con HTTPS y caché ----------
+
+  CloudFrontOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: team-portal-oac
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Origins:
+          - Id: frontend-s3-origin
+            DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            OriginAccessControlId: !Ref CloudFrontOriginAccessControl
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          TargetOriginId: frontend-s3-origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          ForwardedValues:
+            QueryString: false
+        # Como es una SPA de React, cualquier ruta que no exista (ej. /tablero
+        # al recargar) debe devolver index.html para que React Router la maneje.
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+Outputs:
+  ApiPublicIp:
+    Description: IP pública de la instancia EC2 donde corre la API
+    Value: !GetAtt ApiInstance.PublicIp
+
+  FrontendBucketName:
+    Description: Nombre del bucket S3 del frontend
+    Value: !Ref FrontendBucket
+
+  CloudFrontUrl:
+    Description: URL pública del frontend (a través de CloudFront)
+    Value: !Sub 'https://${CloudFrontDistribution.DomainName}'
