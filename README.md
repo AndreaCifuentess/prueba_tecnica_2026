@@ -116,7 +116,7 @@ sam delete
  
 ## Tiempo empleado
  
-Aproximadamente **10-12 horas** en total (por encima del límite sugerido de 8 horas), principalmente por tiempo adicional invertido en depuración de entorno: incompatibilidad de Prisma con versiones recientes de Node.js, configuración de AWS SAM CLI, y ajustes de compatibilidad de Docker (versión de Node para el build del frontend, compilación nativa de `bcrypt`).
+Aproximadamente **11 horas** en total (por encima del límite sugerido de 8 horas), principalmente por tiempo adicional invertido en depuración de entorno: incompatibilidad de Prisma con versiones recientes de Node.js, configuración de AWS SAM CLI, y ajustes de compatibilidad de Docker (versión de Node para el build del frontend, compilación nativa de `bcrypt`).
 
 ## Limitaciones y pendientes conocidos
  
