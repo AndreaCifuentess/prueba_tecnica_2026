@@ -13,10 +13,10 @@ Aplicación web para que un equipo consulte su actividad, administre sus usuario
 
 # Cuentas de demostración
 
-| Administrador | adminprueba@demo.com      | 12345      |
-| Usuario       | userprueba@demo.com       | 12345      |
+*  Administrador | adminprueba@demo.com      | 12345
+*  Usuario       | userprueba@demo.com       | 12345      
  
-Estas cuentas se crean automatica al lavantar el proyecto
+Estas cuentas se crean automatica al lavantar el proyecto.
 
 **Cómo puede iniciar sesión un usuario creado desde la aplicación:** cualquier usuario nuevo creado por un administrador desde la pantalla "Usuarios" puede iniciar sesión de inmediato en la pantalla de login, usando el correo y la contraseña que el administrador le asignó al crearlo.
 
