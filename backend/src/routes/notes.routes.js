@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar nota (texto, estado o posiciones X, Y al arrastrar)
+// Actualizar nota 
 router.patch('/:id', async (req, res) => {
   const { id } = req.params;
   const { title, text, status, posX, posY } = req.body;

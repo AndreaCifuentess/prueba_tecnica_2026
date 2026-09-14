@@ -57,7 +57,7 @@ export function BoardPage() {
   }
 
   async function handleDragEnd(id, posX, posY) {
-    // Actualización optimista: se refleja en interfaz al instante
+    
     setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, posX, posY } : n)));
     try {
       await api.patch(`/notes/${id}/`, { posX, posY });

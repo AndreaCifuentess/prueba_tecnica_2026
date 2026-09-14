@@ -8,7 +8,6 @@ const LAMBDA_METRICS_URL = process.env.LAMBDA_METRICS_URL || 'http://localhost:3
 
 router.use(authenticate);
 
-// GET /api/dashboard/metrics
 router.get('/metrics', async (req, res) => {
   try {
     const response = await fetch(LAMBDA_METRICS_URL);

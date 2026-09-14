@@ -128,5 +128,7 @@ Aproximadamente **10-12 horas** en total (por encima del límite sugerido de 8 h
 
 - Eliminar una nota o desactivar un usuario ocurre de inmediato al hacer clic, sin un diálogo de "¿Estás seguro?" — una mejora de UX pendiente para evitar borrados accidentales.
 
+**Versión entregada:** Último commit del repositorio en la rama main al momento de esta entrega.
+
 
 

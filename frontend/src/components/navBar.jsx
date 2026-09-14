@@ -12,7 +12,7 @@ export function Navbar() {
 
   if (!user) return null;
 
-  // Clase dinámica para los links del menú con acento en azul
+  
   const linkClass = ({ isActive }) =>
     `px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-150 ${
       isActive
