@@ -13,10 +13,10 @@ Aplicación web para que un equipo consulte su actividad, administre sus usuario
 
 # Cuentas de demostración
 
-| Administrador | adminprueba@demo.com      | 12345      |
-| Usuario       | userprueba@demo.com       | 12345      |
+*  Administrador | adminprueba@demo.com      | 12345
+*  Usuario       | userprueba@demo.com       | 12345      
  
-Estas cuentas se crean automatica al lavantar el proyecto
+Estas cuentas se crean automatica al lavantar el proyecto.
 
 **Cómo puede iniciar sesión un usuario creado desde la aplicación:** cualquier usuario nuevo creado por un administrador desde la pantalla "Usuarios" puede iniciar sesión de inmediato en la pantalla de login, usando el correo y la contraseña que el administrador le asignó al crearlo.
 
@@ -116,7 +116,7 @@ sam delete
  
 ## Tiempo empleado
  
-Aproximadamente **10-12 horas** en total (por encima del límite sugerido de 8 horas), principalmente por tiempo adicional invertido en depuración de entorno: incompatibilidad de Prisma con versiones recientes de Node.js, configuración de AWS SAM CLI, y ajustes de compatibilidad de Docker (versión de Node para el build del frontend, compilación nativa de `bcrypt`).
+Aproximadamente **11 horas** en total (por encima del límite sugerido de 8 horas), principalmente por tiempo adicional invertido en depuración de entorno: incompatibilidad de Prisma con versiones recientes de Node.js, configuración de AWS SAM CLI, y ajustes de compatibilidad de Docker (versión de Node para el build del frontend, compilación nativa de `bcrypt`).
 
 ## Limitaciones y pendientes conocidos
  
